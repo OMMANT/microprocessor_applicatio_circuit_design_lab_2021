@@ -32,13 +32,20 @@ int main(int argc, char *argv[]){
     //         }
     //     }
     // }
+    int i = 0;
     while(1){
         clock_t c_time = clock(), b_time = clock();
 
-        if(c_time - start_time >= 1 * CLOCKS_PER_SEC){
-            printf("1 Sec\n");
-            break;
+        if(c_time - start_time >= 3 * CLOCKS_PER_SEC){
+            system("clear");
+            map_block_down();            
+            map_refresh();
+            map_print();
+            printf("%d Sec\n", 2 * ++i);
+            start_time = c_time;
         }
+        if(i > 10)
+            break;
     }
 
     return 0;   

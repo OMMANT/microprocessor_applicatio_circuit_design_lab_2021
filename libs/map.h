@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "utils.h"
 
 typedef enum BLOCKS{
     square,
@@ -45,7 +46,7 @@ typedef struct MAP{
     int x, y;
 
     Blocks current_block;
-    
+    Blocks next_block;    
 }Map;
 
 /* GLOBAL VARIABLES */
@@ -56,5 +57,6 @@ int** blocks[5];
 void map_init();
 void map_print();
 void map_refresh();
+void map_block_down();
 
 #endif
