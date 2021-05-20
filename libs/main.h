@@ -1,18 +1,9 @@
-#ifndef COMMON
-#define COMMON
-#define TRUE    1
-#define FALSE   0
-
-typedef int boolean;
-
-#endif
-
-
 #ifndef MAIN
 #define MAIN
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "utils.h"
 
 static clock_t start_time = 0;
 

@@ -1,91 +1,152 @@
 #include "map.h"
 
 void map_init(){
-    for(int i = 0; i < 5; i++)
+    // BLOCKS SETUP //
+    int *block_addr[5] = {(int*)square_block, (int*)cross_block, (int*)jmino_block, (int*)lmino_block, (int*)straight_block};
+    for(int i = 0; i < 5; i++){
         blocks[i] = (int**)malloc(sizeof(int*) * 4);
-    blocks[0][0] = square_block;
-    blocks[0][1] = square_block + 1;
-    blocks[1][0] = cross_block;
-    blocks[1][1] = cross_block + 1;
-    blocks[2][0] = jmino_block;
-    blocks[2][1] = jmino_block + 1;
-    blocks[3][0] = lmino_block;
-    blocks[3][1] = lmino_block + 1;
-    blocks[4][0] = straight_block;
-    blocks[4][1] = straight_block + 1;
-
-    map.x = 2;
-    map.y = 6;
-    map.current_block = rand() % N_BLOCK;
-    map.next_block = rand() % N_BLOCK;
-    printf("current_block: %d\n", map.current_block);
-    for(int i = 0; i < 4; i++){
-        map.block_position[0][i] = blocks[map.current_block][0][i] + map.y;
-        map.block_position[1][i] = blocks[map.current_block][1][i] + map.x;
-        printf("(y, x): (%d, %d)\n", map.block_position[0][i], map.block_position[1][i]);
+        for(int j = 0; j < 4; j++)
+            blocks[i][j] = block_addr[i] + 2 * j;
     }
+
+    // Map Setup //
+    map = (Map*)calloc(1, sizeof(Map));
+    map->current_block = (Block*)calloc(1, sizeof(Block));
+    map->current_block->type = rand() % N_BLOCK;
+    copy_block(map->current_block->position, map->current_block->type);    
+    map->current_block->y = 6;
+    map->current_block->x = 2;
+    map->next_block = rand() % N_BLOCK;
+    
+    map_refresh();
+    map_print();
 }
 
 void map_print(){
+    int (*map_)[COL] = map->map;
+
     for(int i = ROW - 1; i >= 0; i--){
         for(int j = 0; j < COL; j++){
-            printf("(%d, %d): %d ", i, j, map.map[i][j]);
+            printf("%d ", map_[i][j]);
         }
         printf("\n");
     }
     printf("\n");
 }
 
-void map_refresh(){
+void map_block_down(){
+    Block* b = map->current_block;
+    int (*map_)[COL] = map->map, y = b->y, x = b->x;
+
     for(int i = 0; i < 4; i++){
-        int x, y;
-        y = map.block_position[0][i];
-        x = map.block_position[1][i];
+        int y_ = b->position[i][0] + y;
+        int x_ = b->position[i][1] + x;
 
-        if(!((0 <= x && x < COL) && (0 <= y && y < ROW)))
+        if((0 <= x_ && x_ < COL) && (0 <= y_ && y_ < ROW)){
+            map_[y_][x_] = 0;
+        }
+    }
+    b->y--;
+}
+
+void map_refresh(){
+    Block *b = map->current_block;
+    int (*map_)[COL] = map->map, y = b->y, x = b->x;
+    boolean is_stop = FALSE;
+
+    for(int i = 0; i < 4; i++){
+        int y_ = b->position[i][0] + y;
+        int x_ = b->position[i][1] + x;
+
+        if(y_ >= ROW)
             continue;
-
-        if(map.map[y][x] == 0) // Available
-            map.map[y][x] = 1;
+        else if(map->floor[x_] == y_)
+            is_stop = TRUE;
+        
+        if(map_[y_][x_] == 0)
+            map_[y_][x_] = 1;
         else{
             ;
-            //Unabailable;
-        }       
+        }
+    }
+    if(is_stop)
+        block_stop();
+}
+
+void block_stop(){
+    Block *b = map->current_block;
+    int (*map_)[COL] = map->map, y = b->y, x = b->x;
+
+    for(int i = 0; i < 4; i++){
+        int y_ = b->position[i][0] + y;
+        int x_ = b->position[i][1] + x;
+
+        if(map->floor[x_] == y_)
+            map->floor[x_] = y_ + 1;
+    }
+
+    free(map->current_block);
+    map->current_block = (Block*)malloc(sizeof(Block));
+    map->current_block->type = map->next_block;
+    copy_block(map->current_block->position, map->current_block->type);
+    map->current_block->x = 2;
+    map->current_block->y = 6;
+    map->next_block = rand() % N_BLOCK;
+}
+
+void copy_block(int (*block)[2], BLOCK_TYPE type){
+    for(int i = 0; i < 4; i++){
+        block[i][0] = blocks[type][i][0];
+        block[i][1] = blocks[type][i][1];
     }
 }
 
-void map_block_down(){
-    map.y--;
-    boolean is_stop = FALSE;
+void block_rotate_left(){
+    Block* b = map->current_block;
+    int rot[2][2] = {
+        {0, -1},
+        {1, 0}
+    };
+    int (*block)[2] = b->position;
+    int temp[4][2] = {0,};
+    int y = b->y, x = b->x;
+
     for(int i = 0; i < 4; i++){
-        int *y = &map.block_position[0][i];
-        int *x = &map.block_position[1][i];
-        map.map[*y][*x] = 0;
-        printf("MAP_BLOCK_DOWN1 (y, x): (%d, %d)\n", *y, *x);
-        *y = blocks[map.current_block][0][i] + map.y;
-        *x = blocks[map.current_block][1][i] + map.x;
-        printf("MAP_BLOCK_DOWN2 (y, x): (%d, %d)\n", map.block_position[0][i], map.block_position[1][i]);
-        if(*y == -1){
-            *y = 0;
-            is_stop = TRUE;
+        for(int j = 0; j < 2; j++){
+            for(int k = 0; k < 2; k++){
+                temp[i][j] += block[i][k] * rot[k][j];
+            }
         }
     }
     
-    if(is_stop){
-        for(int i = 0; i < 4; i++){
-            int y = map.block_position[0][i];
-            int x = map.block_position[1][i];
-            map.map[y][x] = 1;
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 2; j++){
+            int y_ = b->position[i][0] + y;
+            int x_ = b->position[i][1] + x;
+            map->map[y_][x_] = 0;
+            block[i][j] = temp[i][j];
         }
-        map.current_block = map.next_block;
-        map.next_block = rand() % N_BLOCK;
-        map.x = 2;
-        map.y = 6;
-        printf("current_block: %d\n", map.current_block);
-        for(int i = 0; i < 4; i++){
-            map.block_position[0][i] = blocks[map.current_block][0][i] + map.y;
-            map.block_position[1][i] = blocks[map.current_block][1][i] + map.x;
-            printf("(y, x): (%d, %d)\n", map.block_position[0][i], map.block_position[1][i]);
+    }
+}
+
+void block_rotate_right(){
+    Block* b = map->current_block;
+    int rot[2][2] = {{0, 1}, {-1, 0}}, temp[4][2] = {0, }, (*block)[2] = b->position;
+    int y = b->y, x = b->x;
+
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 2; j++){
+            for(int k = 0; k < 2; k++)
+                temp[i][j] += block[i][k] * rot[k][j];
+        }
+    }
+    
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 2; j++){
+            int y_ = b->position[i][0] + y;
+            int x_ = b->position[i][1] + x;
+            map->map[y_][x_] = 0;
+            block[i][j] = temp[i][j];
         }
     }
 }
