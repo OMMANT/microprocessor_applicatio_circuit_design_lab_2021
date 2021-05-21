@@ -31,6 +31,9 @@ void map_print(){
         }
         printf("\n");
     }
+    printf("floor: ");
+    for(int i = 0; i < COL; i++)
+        printf("%d ", map->floor[i]);
     printf("\n");
 }
 
@@ -66,7 +69,8 @@ void map_refresh(){
         if(map_[y_][x_] == 0)
             map_[y_][x_] = 1;
         else{
-            ;
+            printf("Game Over!\n");
+            exit(0);
         }
     }
     if(is_stop)
@@ -81,8 +85,7 @@ void block_stop(){
         int y_ = b->position[i][0] + y;
         int x_ = b->position[i][1] + x;
 
-        if(map->floor[x_] == y_)
-            map->floor[x_] = y_ + 1;
+        map->floor[x_] = y_ + 1;
     }
 
     free(map->current_block);
