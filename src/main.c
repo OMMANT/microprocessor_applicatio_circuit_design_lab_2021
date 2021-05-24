@@ -1,45 +1,28 @@
 #include "main.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "block.h"
 #include "map.h"
 
 int main(int argc, char* argv[]){
-    int time = 0;
-    clock_t b_time = clock();
+    init();
+    int arr[4][2] = {{0, 0}, {1, 0}, {-1, 0}, {2, 0}};
+    int arr2[4][2] = {{0, 0}, {1, 0}, {-1, 0}, {1, 1}};
+    Type type = straight;
+    Block* test = get_block(type);
 
-    init_variable();
+    printf("Hello, World!\n");
 
-    while(TRUE){
-        clock_t c_time = clock();
-        
-        if(c_time - b_time >= CLOCKS_PER_SEC){
-            // system("clear");
-            int rotate = rand() % 3;
-            if(rotate){
-                if(rotate == 1)
-                    block_rotate_left();
-                else
-                    block_rotate_right();
-            }
-            map_block_down();
-            int r = rand() % 3;
-            if(r == 0)
-                block_move_left();
-            else if(r == 1)
-                block_move_right();
-
-            map_refresh();
-            map_print();
-            printf("%d Sec\n", ++time);
-            b_time = c_time;
-        }
-        if(time > 20)
-            break;
+    for(int i = 0; i < 4; i++){
+        printf("(%d, %d)\n", test->position[i][0], test->position[i][1]);
     }
 
     return 0;
 }
 
-void init_variable(){
-    start_time = clock();
+void init(){
     srand(time(NULL));
+    start_time = clock();
+    block_init();
     map_init();
 }
