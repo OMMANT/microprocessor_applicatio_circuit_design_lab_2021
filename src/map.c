@@ -46,10 +46,10 @@ void map_block_down(){
         int x_ = b->position[i][1] + x;
 
         if((0 <= x_ && x_ < COL) && (0 <= y_ && y_ < ROW)){
-            map_[y_][x_] = 0;
+            map->map[y_][x_] = 0;
         }
     }
-    b->y--;
+    (b->y)--;
 }
 
 void map_refresh(){
@@ -60,7 +60,6 @@ void map_refresh(){
     for(int i = 0; i < 4; i++){
         int y_ = b->position[i][0] + y;
         int x_ = b->position[i][1] + x;
-
         if(y_ >= ROW)
             continue;
         else if(map->floor[x_] == y_)
@@ -152,4 +151,57 @@ void block_rotate_right(){
             block[i][j] = temp[i][j];
         }
     }
+}
+
+void block_move_left(){
+    Block* b = map->current_block;
+    int (*block)[2] = b->position;
+    int y = b->y, x = b->x, min_x = COL;
+    boolean move_left = TRUE;
+
+    // 기존에 맵에 그렸던 블럭을 지움
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 2; j++){
+            int y_ = block[i][0] + y;
+            int x_ = block[i][1] + x;
+            map->map[y_][x_] = 0;
+        }
+    }
+
+    for(int i = 0; i < 4; i++){
+        int x_ = block[i][1] + x;
+
+        if(!(0 < x_ && x_ < COL))
+            move_left = FALSE;
+    }
+
+    if(move_left)
+        (b->x)--;
+}
+
+void block_move_right(){
+    Block* b = map->current_block;
+    int (*block)[2] = b->position;
+    int y = b->y, x = b->x, min_x = COL;
+    boolean move_right = TRUE;
+
+    // 기존에 맵에 그렸던 블럭을 지움
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 2; j++){
+            int y_ = block[i][0] + y;
+            int x_ = block[i][1] + x;
+            map->map[y_][x_] = 0;
+        }
+    }
+
+    for(int i = 0; i < 4; i++){
+        int x_ = block[i][1] + x;
+
+        if(!(0 <= x_ && x_ < COL - 1))
+            move_right = FALSE;
+    }
+
+    if(move_right)
+        (b->x)++;
+
 }

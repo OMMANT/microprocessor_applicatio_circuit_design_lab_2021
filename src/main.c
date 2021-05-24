@@ -12,7 +12,20 @@ int main(int argc, char* argv[]){
         
         if(c_time - b_time >= CLOCKS_PER_SEC){
             // system("clear");
+            int rotate = rand() % 3;
+            if(rotate){
+                if(rotate == 1)
+                    block_rotate_left();
+                else
+                    block_rotate_right();
+            }
             map_block_down();
+            int r = rand() % 3;
+            if(r == 0)
+                block_move_left();
+            else if(r == 1)
+                block_move_right();
+
             map_refresh();
             map_print();
             printf("%d Sec\n", ++time);
