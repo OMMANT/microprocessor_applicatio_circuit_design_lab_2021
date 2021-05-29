@@ -130,11 +130,20 @@ void erase(){
 
     for(int i = map->erasable_count - 1; i >= 0; i--){
         int erase_row = erasable[i];
-        for(int j = erase_row; j < ROW - 1; j++){
-            for(int k = 0; k < COL; k++){
-                map_arr[j][k] = map_arr[j + 1][k];
+        // erase rows
+        if(erase_row == ROW - 1){
+            for(int j = 0; j < COL; j++)
+                map_arr[erase_row][j] = 0;
+        }
+        else{
+            for(int j = erase_row; j < ROW - 1; j++){
+                for(int k = 0; k < COL; k++){
+                    map_arr[j][k] = map_arr[j + 1][k];
+                }
             }
         }
+
+        // update the floor 
         for(int j = 0; j < COL; j++){
             int max_y = 0;
             for(int k = ROW - 2; k >= 0; k--){
@@ -154,18 +163,14 @@ void erase(){
 
     // Update Combo
     if(0 < map->erasable_count){
-        if(map->erased_before){
-            if (map->erasable_count == 1)
-                map->combo += 1;
-            else if(map->erasable_count < 3)
-                map->combo += map->erasable_count + 1;
-            else if(map->erasable_count >= 3)
-                map->combo += 2 * map->erasable_count;
-            map->combo = min(map->combo, 8);            
-        }
-        else{
-            map->erased_before = TRUE;
-        }
+        if(map->erased_before && map->erasable_count == 1)
+            map->combo += 1;
+        else if(map->erasable_count < 3)
+            map->combo += map->erasable_count + 1;
+        else if(map->erasable_count >= 3)
+            map->combo += 2 * map->erasable_count;
+        map->erased_before = TRUE;
+        map->combo = min(map->combo, 8);            
     }
     else{
         map->erased_before = FALSE;
@@ -193,5 +198,4 @@ boolean can_floor_rise(){
         }
     }
     return TRUE;
-
 }

@@ -48,6 +48,7 @@ void stuck_map(Block* b);       // 블럭이 바닥에 닿은 이후 블럭을 �
 void move_left(Block* b);
 void move_right(Block* b);
 void move_down(Block* b);
+void block_descent(Block* b, int* floor);
 boolean can_move_down();
 void rotate_left(Block* b);
 void rotate_right(Block* b);
