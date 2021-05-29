@@ -1,12 +1,9 @@
-#ifndef MAIN
-#define MAIN
+#ifndef MAIN_H
+#define MAIN_H
 #include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "utils.h"
 
-static clock_t start_time = 0;
+clock_t start_time;
 
-void init_variable();
+void init();
 
 #endif

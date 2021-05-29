@@ -1,155 +1,197 @@
 #include "map.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 void map_init(){
-    // BLOCKS SETUP //
-    int *block_addr[5] = {(int*)square_block, (int*)cross_block, (int*)jmino_block, (int*)lmino_block, (int*)straight_block};
-    for(int i = 0; i < 5; i++){
-        blocks[i] = (int**)malloc(sizeof(int*) * 4);
-        for(int j = 0; j < 4; j++)
-            blocks[i][j] = block_addr[i] + 2 * j;
-    }
-
-    // Map Setup //
+    int (*map_arr)[COL] = NULL;    
     map = (Map*)calloc(1, sizeof(Map));
-    map->current_block = (Block*)calloc(1, sizeof(Block));
-    map->current_block->type = rand() % N_BLOCK;
-    copy_block(map->current_block->position, map->current_block->type);    
-    map->current_block->y = 6;
-    map->current_block->x = 2;
-    map->next_block = rand() % N_BLOCK;
-    
-    map_refresh();
-    map_print();
+    map->current_block = get_block(rand() % N_BLOCK);
+    map->next_block_type = rand() % N_BLOCK;
+    map->score = 0;
+    map->combo = 0;
+    map->erased_before = FALSE;
+    map_arr = map->map;
+
 }
 
 void map_print(){
-    int (*map_)[COL] = map->map;
+    int (*map_arr)[COL] = map->map;
+    int *floor = map->floor;
 
     for(int i = ROW - 1; i >= 0; i--){
         for(int j = 0; j < COL; j++){
-            printf("%d ", map_[i][j]);
+            printf("%d ", map_arr[i][j]);
         }
         printf("\n");
     }
     printf("floor: ");
-    for(int i = 0; i < COL; i++)
-        printf("%d ", map->floor[i]);
+    for(int i = 0; i < COL; i++){
+        printf("%d ", floor[i]);
+    }
     printf("\n");
+    printf("score: %d\tcombo: %d\n", map->score, map->combo);
 }
 
-void map_block_down(){
-    Block* b = map->current_block;
-    int (*map_)[COL] = map->map, y = b->y, x = b->x;
+void bind_block(){
+    // 맵과 블럭을 연결이 유효한 지 확인
+    // 1. 블럭 위치에 맵이 비어있어야함
+    // 2. 블럭이 유효한 위치에 있어야 함 (0 <= x < col, 0 <= y)
+    int (*map_arr)[COL] = map->map;
+    Block* block = map->current_block;
+    boolean available = TRUE;
+    int base_x = block->x, base_y = block->y;
 
     for(int i = 0; i < 4; i++){
-        int y_ = b->position[i][0] + y;
-        int x_ = b->position[i][1] + x;
+        int x = block->position[i][0] + base_x;
+        int y = block->position[i][1] + base_y;
 
-        if((0 <= x_ && x_ < COL) && (0 <= y_ && y_ < ROW)){
-            map_[y_][x_] = 0;
-        }
-    }
-    b->y--;
-}
-
-void map_refresh(){
-    Block *b = map->current_block;
-    int (*map_)[COL] = map->map, y = b->y, x = b->x;
-    boolean is_stop = FALSE;
-
-    for(int i = 0; i < 4; i++){
-        int y_ = b->position[i][0] + y;
-        int x_ = b->position[i][1] + x;
-
-        if(y_ >= ROW)
+        if(y >= ROW)
             continue;
-        else if(map->floor[x_] == y_)
-            is_stop = TRUE;
-        
-        if(map_[y_][x_] == 0)
-            map_[y_][x_] = 1;
-        else{
-            printf("Game Over!\n");
-            exit(0);
+
+        if(map_arr[y][x] == 1){
+            available = FALSE;
+            printf("Invalid binding(1)\n");
+            exit(1);
+        }
+        if((0 > x || x >= COL) || (0 > y)){
+            available = FALSE;
+            printf("Invalid binding(2)\n");
+            exit(1);
         }
     }
-    if(is_stop)
-        block_stop();
-}
-
-void block_stop(){
-    Block *b = map->current_block;
-    int (*map_)[COL] = map->map, y = b->y, x = b->x;
-
-    for(int i = 0; i < 4; i++){
-        int y_ = b->position[i][0] + y;
-        int x_ = b->position[i][1] + x;
-
-        map->floor[x_] = y_ + 1;
-    }
-
-    free(map->current_block);
-    map->current_block = (Block*)malloc(sizeof(Block));
-    map->current_block->type = map->next_block;
-    copy_block(map->current_block->position, map->current_block->type);
-    map->current_block->x = 2;
-    map->current_block->y = 6;
-    map->next_block = rand() % N_BLOCK;
-}
-
-void copy_block(int (*block)[2], BLOCK_TYPE type){
-    for(int i = 0; i < 4; i++){
-        block[i][0] = blocks[type][i][0];
-        block[i][1] = blocks[type][i][1];
-    }
-}
-
-void block_rotate_left(){
-    Block* b = map->current_block;
-    int rot[2][2] = {
-        {0, -1},
-        {1, 0}
-    };
-    int (*block)[2] = b->position;
-    int temp[4][2] = {0,};
-    int y = b->y, x = b->x;
-
-    for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 2; j++){
-            for(int k = 0; k < 2; k++){
-                temp[i][j] += block[i][k] * rot[k][j];
+    if(available){
+        for(int i = 0; i < 4; i++){
+            int x = block->position[i][0] + base_x;
+            int y = block->position[i][1] + base_y;
+            
+            if(y < ROW){    // y가 6보다 큰 블럭 위치는 무시
+                map_arr[y][x] = 1;
             }
         }
     }
-    
+}
+
+void unbind_block(){
+    int (*map_arr)[COL] = map->map;
+    Block* block = map->current_block;
+    int base_x = block->x, base_y = block->y;
+
     for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 2; j++){
-            int y_ = b->position[i][0] + y;
-            int x_ = b->position[i][1] + x;
-            map->map[y_][x_] = 0;
-            block[i][j] = temp[i][j];
+        int x = block->position[i][0] + base_x;
+        int y = block->position[i][1] + base_y;
+
+        if((0 <= x && x < COL) && (0 <= y && y < ROW)){
+            map_arr[y][x] = 0;
         }
     }
 }
 
-void block_rotate_right(){
-    Block* b = map->current_block;
-    int rot[2][2] = {{0, 1}, {-1, 0}}, temp[4][2] = {0, }, (*block)[2] = b->position;
-    int y = b->y, x = b->x;
+void floor_rise(){
+    int (*map_arr)[COL] = map->map;
+    int* floor = map->floor;
+    Block* block = map->current_block;
+    int base_x = block->x, base_y = block->y;
 
     for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 2; j++){
-            for(int k = 0; k < 2; k++)
-                temp[i][j] += block[i][k] * rot[k][j];
+        int x = block->position[i][0] + base_x;
+        int y = block->position[i][1] + base_y;
+
+        floor[x] = max(floor[x], y + 1);
+    }
+}
+
+void check_erasable(){
+    int (*map_arr)[COL] = map->map;
+    int* floor = map->floor;
+    int* erasable = map->erasable;
+
+    for(int i = 0; i < ROW; i++){
+        boolean flag = TRUE;
+        for(int j = 0; j < COL; j++){
+            if(map_arr[i][j] == 0){
+                flag = FALSE;
+                break;
+            }
+        }
+        if(flag){
+            erasable[map->erasable_count++] = i;
         }
     }
-    
+}
+
+void erase(){
+    int (*map_arr)[COL] = map->map;
+    int* floor = map->floor;
+    int* erasable = map->erasable;
+
+    if(map->erasable_count == 0){
+        printf("Nothing to erase!\n");
+    }
+
+    for(int i = map->erasable_count - 1; i >= 0; i--){
+        int erase_row = erasable[i];
+        for(int j = erase_row; j < ROW - 1; j++){
+            for(int k = 0; k < COL; k++){
+                map_arr[j][k] = map_arr[j + 1][k];
+            }
+        }
+        for(int j = 0; j < COL; j++){
+            int max_y = 0;
+            for(int k = ROW - 2; k >= 0; k--){
+                if(map_arr[k][j] == 1){
+                    max_y = max(max_y, k + 1);
+                    break;
+                }
+            }
+            floor[j] = max_y;
+        }
+    }
+
+    // Compute score & Add
+    int basic_score = 5 * (map->erasable_count * (map->erasable_count + 1));
+    int combo_score = basic_score * map->combo;
+    map->score += basic_score + combo_score;
+
+    // Update Combo
+    if(0 < map->erasable_count){
+        if(map->erased_before){
+            if (map->erasable_count == 1)
+                map->combo += 1;
+            else if(map->erasable_count < 3)
+                map->combo += map->erasable_count + 1;
+            else if(map->erasable_count >= 3)
+                map->combo += 2 * map->erasable_count;
+            map->combo = min(map->combo, 8);            
+        }
+        else{
+            map->erased_before = TRUE;
+        }
+    }
+    else{
+        map->erased_before = FALSE;
+        map->combo = 0;
+    }
+    map->erasable_count = 0;
+}
+
+Map* get_map(){
+    return map;
+}
+
+boolean can_floor_rise(){
+    int (*map_arr)[COL] = map->map;
+    int* floor = map->floor;
+    Block* block = map->current_block;
+    int base_x = block->x, base_y = block->y;
+
     for(int i = 0; i < 4; i++){
-        for(int j = 0; j < 2; j++){
-            int y_ = b->position[i][0] + y;
-            int x_ = b->position[i][1] + x;
-            map->map[y_][x_] = 0;
-            block[i][j] = temp[i][j];
+        int x = block->position[i][0] + base_x;
+        int y = block->position[i][1] + base_y;
+
+        if(floor[x] > y || floor[x] >= 6){
+            return FALSE;
         }
     }
+    return TRUE;
+
 }
