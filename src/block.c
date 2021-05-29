@@ -141,3 +141,18 @@ void check_validation(Block* b){
 	else if(max_x >= COL)
 		b->x -= (max_x - (COL - 1));	
 }
+
+void block_descent(Block* b, int* floor){
+	int move_y = ROW;
+	int base_x = b->x, base_y = b->y;
+
+	for(int i = 0; i < 4; i++){
+		int x = b->position[i][0] + base_x;
+		int y = b->position[i][0] + base_y;
+		int move = y - floor[x];
+
+		move_y = min(move_y, move);
+	}
+
+	b->y -= move_y;
+}

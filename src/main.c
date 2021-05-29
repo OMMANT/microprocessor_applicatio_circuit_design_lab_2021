@@ -33,7 +33,8 @@ int main(int argc, char* argv[]){
             bind_block();
         }
         else if(c == 's'){
-            ;
+            block_descent(map->current_block, map->floor);
+            bind_block();
         }
         else{
             if(can_move_down()){
