@@ -1,4 +1,5 @@
 #include "block.h"
+#include "map.h"
 #include <stdlib.h>
 
 void block_init(){
@@ -20,12 +21,123 @@ Block* get_block(int type){
     return ptr;
 }
 
-void move_left(Block* b){
-    int min_x = 5;
-
-    for(int i = 0; i < 4; i++)
-        min_x = min(min_x, b->position[i][0] + b->x);
+void stuck_map(Block* b){
+    Map* map = get_map();
+    int (*map_arr)[COL] = map->map;
     
-    if(0 < min_x)  //Movable
-        b->x--;    
+    for(int i = 0; i < 4; i++){
+        int x = b->position[i][0] + b->x;
+        int y = b->position[i][1] + b->y;
+
+        map_arr[y][x] = 1;
+    }
+    map->current_block = get_block(map->next_block_type);
+    map->next_block_type = rand() % N_BLOCK;
+}
+
+void move_down(Block* b){
+    b->y--;
+}
+
+boolean can_move_down(){
+    Map* map = get_map();
+    Block* block = map->current_block;
+    int* floor = map->floor;
+    int base_x = block->x, base_y = block->y;
+
+    for(int i = 0; i < 4; i++){
+        int x = block->position[i][0] + base_x;
+        int y = block->position[i][1] + base_y;
+
+        if(floor[x] >= y){
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+void rotate_left(Block* b){
+	int rot[2][2] = {{0, 1}, {-1, 0}};
+	int temp_arr[4][2] = {0, };
+
+	for(int i = 1; i < 4; i++){
+		for(int j = 0; j < 2; j++){
+			for(int k = 0; k < 2; k++){
+				temp_arr[i][j] += b->position[i][k] * rot[k][j];
+			}
+		}
+	}
+
+	for(int i = 0; i < 4; i++){
+		b->position[i][0] = temp_arr[i][0];
+		b->position[i][1] = temp_arr[i][1];
+	}
+
+	check_validation(b);
+}
+
+void rotate_right(Block* b){
+	int rot[2][2] = {{0, -1}, {1, 0}};
+	int temp_arr[4][2] = {0, };
+
+	for(int i = 1; i < 4; i++){
+		for(int j = 0; j < 2; j++){
+			for(int k = 0; k < 2; k++)
+				temp_arr[i][j] += b->position[i][k] * rot[k][j];
+		}
+	}
+
+	for(int i = 0; i < 4; i++){
+		b->position[i][0] = temp_arr[i][0];
+		b->position[i][1] = temp_arr[i][1];
+	}
+	check_validation(b);
+}
+
+void move_left(Block* b){
+	int base_x = b->x, base_y = b->y;
+	int min_x = base_x;
+
+	for(int i = 1; i < 4; i++){
+		min_x = min(min_x, b->position[i][0] + base_x);
+	}
+
+	if(0 < min_x){
+		b->x--;
+	}
+}
+
+void move_right(Block* b){
+	int base_x = b->x, base_y = b->y;
+	int max_x = base_x;
+
+	for(int i = 1; i <4; i++){
+		max_x = max(max_x, b->position[i][0] + base_x);
+	}
+
+	if(max_x < 4){
+		b->x++;
+	}
+}
+
+void check_validation(Block* b){
+	int base_x = b->x, base_y = b->y;
+
+	// 1) base_x < 0 or base_x >= COL
+	if(base_x < 0)
+		b->x++;
+	else if(base_x >= COL)
+		b->x--;
+
+	// 2) x < 0 or x >= COL
+	int min_x = COL, max_x = 0;
+	for(int i = 0; i < 4; i++){
+		int x = b->position[i][0] + base_x;
+		min_x = min(min_x, x);
+		max_x = max(max_x, x);
+	}
+	if(min_x < 0)
+		b->x += (-1 * min_x);
+	else if(max_x >= COL)
+		b->x -= (max_x - (COL - 1));	
 }

@@ -11,6 +11,9 @@
 typedef struct MAP{
     int map[ROW][COL];
     int floor[COL];
+    int erasable[ROW];
+    int erasable_count, score, combo;
+    boolean erased_before;
 
     Block* current_block;
     Type next_block_type;
@@ -18,8 +21,16 @@ typedef struct MAP{
 
 /* ABSTRACT FUNCTION DEFINITION */
 void map_init();
+void map_print();
+void bind_block();
+void unbind_block();
+void floor_rise();
+void check_erasable();
+void erase();
 Map* get_map();
+boolean can_floor_rise();
 
 /* GLOBAL VARIABLE */
+Map* map;
 
 #endif

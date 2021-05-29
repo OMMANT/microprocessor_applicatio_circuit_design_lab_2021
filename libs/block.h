@@ -44,7 +44,12 @@ typedef enum BLOCK_TYPE{
 /* ABSTRACT FUNCTION DEFINITION */
 void block_init();  // 블럭의 기본 초기화 함수
 Block* get_block(int type); // 초기화된 블럭 반환
+void stuck_map(Block* b);       // 블럭이 바닥에 닿은 이후 블럭을 맵에 고정시키고 다음 블럭으로 넘어가는 함수
 void move_left(Block* b);
+void move_right(Block* b);
+void move_down(Block* b);
+boolean can_move_down();
 void rotate_left(Block* b);
-
+void rotate_right(Block* b);
+void check_validation(Block* b);
 #endif
