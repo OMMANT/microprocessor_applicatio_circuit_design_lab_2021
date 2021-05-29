@@ -95,27 +95,41 @@ void rotate_right(Block* b){
 }
 
 void move_left(Block* b){
+	Map* map = get_map();
 	int base_x = b->x, base_y = b->y;
 	int min_x = base_x;
+	boolean movable = TRUE;
 
 	for(int i = 1; i < 4; i++){
-		min_x = min(min_x, b->position[i][0] + base_x);
+		int x = b->position[i][0] + base_x, y = b->position[i][1] + base_y;
+		min_x = min(min_x, x);
+		if((0 < x && x < COL) && (y < ROW) && map->map[y][x - 1] == 1){
+			movable = FALSE;
+			break;
+		}
 	}
 
-	if(0 < min_x){
+	if(0 < min_x && movable){
 		b->x--;
 	}
 }
 
 void move_right(Block* b){
+	Map* map = get_map();
 	int base_x = b->x, base_y = b->y;
 	int max_x = base_x;
+	boolean movable = TRUE;
 
-	for(int i = 1; i <4; i++){
-		max_x = max(max_x, b->position[i][0] + base_x);
+	for(int i = 1; i <4; i++){		
+		int x = b->position[i][0] + base_x, y = b->position[i][1] + base_y;
+		max_x = max(max_x, x);
+		if((0 <= x && x < COL - 1) && (y < ROW) && map->map[y][x + 1] == 1){
+			movable = FALSE;
+			break;
+		}
 	}
 
-	if(max_x < 4){
+	if(max_x < 4 && movable){
 		b->x++;
 	}
 }
@@ -148,7 +162,7 @@ void block_descent(Block* b, int* floor){
 
 	for(int i = 0; i < 4; i++){
 		int x = b->position[i][0] + base_x;
-		int y = b->position[i][0] + base_y;
+		int y = b->position[i][1] + base_y;
 		int move = y - floor[x];
 
 		move_y = min(move_y, move);
