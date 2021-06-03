@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "block.h"
 #include "map.h"
+#include "led.h"
 
 static off_t IEB_DOT[MAX_DOT] = {
 	IEB_DOT1,
@@ -34,11 +35,11 @@ void init(){
         exit(EXIT_FAILURE);
     }
 
-    // led = mapper(IEB_LED);
+    led = mapper(IEB_LED);
     for(int i = 0; i < MAX_DOT; i++){
         dot[i] = mapper(IEB_DOT[i]);
     }
-    // init_led(led);
+    init_led(led);
     init_dot(dot);
     srand(time(NULL));
     start_time = clock();
