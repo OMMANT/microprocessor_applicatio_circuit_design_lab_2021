@@ -55,7 +55,7 @@ void bind_block(){
 
         if(map_arr[y][x] == 1){
             available = FALSE;
-            printf("Invalid binding(1)\n");
+            printf("Invalid binding(1)(%d, %d)\n", x, y);
             exit(1);
         }
         if((0 > x || x >= COL) || (0 > y)){
