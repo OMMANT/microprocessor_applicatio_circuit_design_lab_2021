@@ -20,6 +20,5 @@ void init();
 short* mapper(off_t offset);
 void unmapper();
 void emergency_closer();
-truth_t inputter();
 
 #endif

@@ -54,16 +54,17 @@ void bind_block(){
 
         if(y >= ROW)
             continue;
-
+        // 1. 블럭 위치에 맵이 비어있지 않다면 게임 종료
         if(map_arr[y][x] == 1){
             available = FALSE;
-            printf("Invalid binding(1)(%d, %d)\n", x, y);
-            exit(1);
+            fprintf(stderr, "Game Over!\nInvalid binding(1)(%d, %d)\n", x, y);
+            exit(EXIT_FAILURE);
         }
+        // 2. 블럭이 유효한 위치에 없다면 게임 종료
         if((0 > x || x >= COL) || (0 > y)){
             available = FALSE;
-            printf("Invalid binding(2)\n");
-            exit(1);
+            fprintf(stderr, "Game Over!\nInvalid binding(2)\n");
+            exit(EXIT_FAILURE);
         }
     }
     if(available){
@@ -87,6 +88,7 @@ void unbind_block(){
         int x = block->position[i][0] + base_x;
         int y = block->position[i][1] + base_y;
 
+        // 유효 범위 내 값만 0으로, OutofIndex Error 방지
         if((0 <= x && x < COL) && (0 <= y && y < ROW)){
             map_arr[y][x] = 0;
         }
@@ -103,6 +105,7 @@ void floor_rise(){
         int x = block->position[i][0] + base_x;
         int y = block->position[i][1] + base_y;
 
+        // 바닥은 블럭의 높이보다 1 높은 값이나 현재 바닥 높이 중 큰 값을 선택
         floor[x] = max(floor[x], y + 1);
     }
 }
@@ -112,6 +115,7 @@ void check_erasable(){
     int* floor = map->floor;
     int* erasable = map->erasable;
 
+    // 현재 행에 대해 모든 열이 1이면 지울 수 있는 상태; 높은 행부터 확인
     for(int i = 0; i < ROW; i++){
         boolean flag = TRUE;
         for(int j = 0; j < COL; j++){
@@ -207,6 +211,7 @@ boolean can_floor_rise(){
         int x = block->position[i][0] + base_x;
         int y = block->position[i][1] + base_y;
 
+        // 최대 높이에 이미 도달했거나 바닥이 블럭 높이보다 높은경우
         if(floor[x] > y || floor[x] >= 6){
             return FALSE;
         }

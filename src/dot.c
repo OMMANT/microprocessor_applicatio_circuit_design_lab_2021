@@ -1,9 +1,5 @@
 #include "dot.h"
 
-static unsigned short dot_decimal[10][MAX_DOT] = {
-    {0x7f, }
-};
-
 static short* dot[MAX_DOT];
 
 void init_dot(short * address[]){
@@ -28,5 +24,5 @@ void dot_write(int (*dot_mat)[MAX_DOT]){
             *dot[i] = temp;
         }
     }
-    usleep(300000);
+    usleep(30000);
 }
