@@ -16,7 +16,7 @@ void dot_clear(){
     for(int i = 0; i < MAX_DOT; i++){
         *dot[i] = 0;
     }
-    usleep(0);
+    usleep(1000);
 }
 
 void dot_write(int (*dot_mat)[MAX_DOT]){
@@ -28,4 +28,5 @@ void dot_write(int (*dot_mat)[MAX_DOT]){
             *dot[i] = temp;
         }
     }
+    usleep(300000);
 }

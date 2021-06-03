@@ -41,6 +41,7 @@ void init(){
     }
     init_led(led);
     init_dot(dot);
+    dot_celar();
     srand(time(NULL));
     start_time = clock();
     block_init();
