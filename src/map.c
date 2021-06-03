@@ -1,4 +1,5 @@
 #include "map.h"
+#include "dot.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -33,6 +34,7 @@ void map_print(){
     }
     printf("\n");
     printf("score: %d\tcombo: %d\tnext_block: %d\n", map->score, map->combo, map->next_block_type);
+    dot_write(map_arr);
 }
 
 void bind_block(){

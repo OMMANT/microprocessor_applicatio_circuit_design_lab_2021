@@ -18,70 +18,11 @@ static void * map_data[100];
 short *led, *dot[MAX_DOT];
 
 int main(int argc, char* argv[]){
-    int mode = 0;
-
     init();
-    map_print();
     Map* map = get_map();
-    while(1){
-        clock_t c_time = clock();
-        unbind_block();
-        char c = '\0';
-        c = getchar();
-        if(c == '\n')
-            continue;
-        if(c == 'q'){
-            rotate_left(map->current_block);
-            bind_block();
-        }
-        else if(c == 'e'){
-            rotate_right(map->current_block);
-            bind_block();
-        }
-        else if(c == 'a'){
-            move_left(map->current_block);
-            bind_block();
-        }
-        else if(c == 'd'){
-            move_right(map->current_block);
-            bind_block();
-        }
-        else if(c == 's'){
-            block_descent(map->current_block, map->floor);
-            bind_block();
-        }
-        else{
-            if(can_move_down()){
-                move_down(map->current_block);
-            }
-            else{
-                if(can_floor_rise()){
-                    floor_rise();
-                    stuck_map(map->current_block);
-                    check_erasable();
-                    printf("erasable: [ ");
-                    for(int i = 0; i < map->erasable_count; i++){
-                        printf("%d ", map->erasable[i]);
-                    }
-                    printf("]\n");
-                    erase();
-                }
-                else{
-                    printf("Game Over!\n");
-                    exit(1);
-                }
-            }
-            bind_block();
-        }
-        printf("c: %c\n", c);
-        system("clear");
-        map_print();
-
-        // while (c_time - start_time < CLOCKS_PER_SEC){
-        //     c_time = clock();
-        // }
-        // start_time = c_time;
-    }
+    while(inputter() == TRUE){  }
+    unmapper();
+    close(fd);
 
     return 0;
 }
@@ -93,11 +34,11 @@ void init(){
         exit(EXIT_FAILURE);
     }
 
-    led = mapper(IEB_LED);
+    // led = mapper(IEB_LED);
     for(int i = 0; i < MAX_DOT; i++){
         dot[i] = mapper(IEB_DOT[i]);
     }
-    init_led(led);
+    // init_led(led);
     init_dot(dot);
     srand(time(NULL));
     start_time = clock();
@@ -131,41 +72,58 @@ void emergency_closer() {
 }
 
 truth_t inputter() {
-	int input_int;
+	char c = '\0';
 
 	printf("\n");
 	printf("**********************************************\n");
-	printf("*     Please type a number (0~9) + mode      *\n");
-	printf("*  normal : + 0 ( 0~ 9)  up   : +10 (10~19)  *\n");
-	printf("*  down   : +20 (20~29)  exit : +40 (40~49)  *\n");
-	printf("*     ( e.g. 28 is '8' with 'up' mode )      *\n");
+	printf("*     Please type a number (q e a d s p)    *\n");
+	printf("*  q : rotate left      r   : rotate right  *\n");
+	printf("*  a : move left        d : move right      *\n");
+    printf("*         s : move down directly            *\n");
+	printf("*     p : terminate the program             *\n");
 	printf("**********************************************\n\n");
 
-	scanf("%d", &input_int);
+	scanf("%c", &calloc);
 	
-	
-	if( ( input_int / 10 ) == 4 ) {
-		return FALSE;
+    unbind_block();
+	if(c == '\n')
+        inputter();
+    if(c == 'p')
+        return FALSE;
+    if(c == 'q'){
+        rotate_left(map->current_block);
+    }
+	else if(c == 'e') {
+		rotate_right(map->current_block);
 	}
-
-	if( ( input_int / 10 ) == 1 ) {
-		led_up_shift();
-		dot_up_shift(input_int % 10);
-	}
-	else if( ( input_int / 10 ) == 2 ) {
-		led_down_shift();
-		dot_down_shift(input_int % 10);
-	}
-	else if( ( input_int / 10 ) == 3 ) {
-		led_blink_all();
-		dot_inverse(input_int % 10);
-	}
-	else {
-		dot_write(input_int % 10);
-		usleep(1000000);
-		dot_clear();
-	}
-
+	else if(c == 'a'){
+        move_left(map->current_block);
+    }
+    else if(c == 'd'){
+        move_right(map->current_block);
+    }
+    else if(c == 's'){
+        block_descent(map->current_block, map->floor);
+    }
+    else{
+        if(can_move_down()){
+            move_down(map->current_block);
+        }
+        else{
+            if(can_floor_rise()){
+                floor_rise();
+                stuck_map(map->current_block);
+                check_erasable();
+                erase();
+            }
+            else{
+                printf("Game Over!\n");
+                return FALSE;
+            }
+        }
+    }
+    bind_block();
+    map_print();
 	
 	return TRUE;
 }
