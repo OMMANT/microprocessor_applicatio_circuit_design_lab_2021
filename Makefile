@@ -3,7 +3,7 @@ CC := /usr/local/arm-linux-4.1.1/bin/arm-linux-gcc
 OUTPUT		= tetromino
 SRCS		= ./src/*
 
-CFLAGS		= -I./lib
+CFLAGS		= -I./libs
 
 
 $(OUTPUT) : $(SRCS)
