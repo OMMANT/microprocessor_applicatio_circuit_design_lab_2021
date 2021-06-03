@@ -1,5 +1,6 @@
 #include "map.h"
 #include "dot.h"
+#include "led.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -35,6 +36,7 @@ void map_print(){
     printf("\n");
     printf("score: %d\tcombo: %d\tnext_block: %d\n", map->score, map->combo, map->next_block_type);
     dot_write(map_arr);
+    led_write(map->combo);
 }
 
 void bind_block(){
@@ -168,18 +170,25 @@ void erase(){
 
     // Update Combo
     if(0 < map->erasable_count){
-        if(map->erased_before && map->erasable_count == 1)
-            map->combo += 1;
-        else if(map->erasable_count < 3)
-            map->combo += map->erasable_count + 1;
-        else if(map->erasable_count >= 3)
-            map->combo += 2 * map->erasable_count;
+	if(map->erased_before){
+		if(map->erasable_count < 3)
+			map->combo += map->erasable_count + 1;
+		else if(map->erasable_count >= 3)
+			map->combo += 2 * map->erasable_count;
+	}
+	else{
+		if(1 < map->erasable_count && map->erasable_count <= 3)
+			map->combo += map->erasable_count - 1;
+		else if(map->erasable_count > 3)
+			map->combo += 2 * map->erasable_count;
+	}
         map->erased_before = TRUE;
         map->combo = min(map->combo, 8);            
     }
     else{
         map->erased_before = FALSE;
-        map->combo = 0;
+        map->combo--;
+	map->combo = max(map->combo, 0);
     }
     map->erasable_count = 0;
 }

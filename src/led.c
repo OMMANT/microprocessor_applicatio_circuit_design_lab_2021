@@ -5,6 +5,8 @@ static short * led;
 
 void init_led(short * address) {
 	led = address;
+	*led = 0xFF;
+	usleep(50000);
 }
 
 void led_down_shift() {
@@ -37,3 +39,18 @@ void led_blink_all() {
 		usleep(100000);
 	}
 }
+
+void led_write(int n){
+	int temp = 0;
+	for(int i = 0; i < n; i++){
+		temp <<= 1;
+		temp++;
+	}
+	for(int i = 0; i < 8 - n; i++){
+		temp <<= 1;
+	}
+	*led = (0xFF - temp);
+	usleep(50000);
+
+}
+
