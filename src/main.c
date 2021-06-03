@@ -24,11 +24,12 @@ int main(int argc, char* argv[]){
     while(TRUE){		
 		printf("\n");
 		printf("**********************************************\n");
-		printf("*     Please type a number (q e a d s p)    *\n");
-		printf("*  q : rotate left      r   : rotate right  *\n");
-		printf("*  a : move left        d : move right      *\n");
-		printf("*         s : move down directly            *\n");
-		printf("*     p : terminate the program             *\n");
+		printf("*     Please type a number (q e a d s p)     *\n");
+		printf("*  q : rotate left      e   : rotate right   *\n");
+		printf("*    a : move left        d : move right     *\n");
+		printf("*         s : move down directly             *\n");
+		printf("*        p : terminate the program           *\n");
+		printf("*         others : move down 1 block         *\n");
 		printf("**********************************************\n\n");
 		clock_t c_time = clock();
 		unbind_block();
@@ -55,6 +56,10 @@ int main(int argc, char* argv[]){
 		else if(c == 's'){
 			block_descent(map->current_block, map->floor);
 			bind_block();
+		}
+		else if(c == 'p'){
+			printf("TETROMINO TERMINATE!\nInput (p)\n");
+			exit(EXIT_SUCCESS);
 		}
 		else{
 			if(can_move_down()){
