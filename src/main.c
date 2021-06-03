@@ -83,7 +83,7 @@ truth_t inputter() {
 	printf("*     p : terminate the program             *\n");
 	printf("**********************************************\n\n");
 
-	scanf("%c", &calloc);
+	scanf("%c", &c);
 	
     unbind_block();
 	if(c == '\n')
