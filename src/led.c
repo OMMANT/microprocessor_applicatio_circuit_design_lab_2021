@@ -22,4 +22,3 @@ void led_write(int n){
 	*led = (0xFF - temp);
 	usleep(50000);
 }
-

@@ -2,7 +2,7 @@
 #include "map.h"
 #include <stdlib.h>
 
-void block_init(){
+void block_init(){	// 블럭의 기본 초기화 함수
     blocks[0] = (int*)SQUARE_BLOCK;
     blocks[1] = (int*)CROSS_BLOCK;
     blocks[2] = (int*)J_BLOCK;
@@ -10,7 +10,7 @@ void block_init(){
     blocks[4] = (int*)STRAIGHT_BLOCK;
 }
 
-Block* get_block(int type){
+Block* get_block(int type){ // 초기화된 블럭 반환
     Block* ptr = (Block*)malloc(sizeof(Block));
     
     copy(blocks[type], (int*)ptr->position, 8);
@@ -21,7 +21,7 @@ Block* get_block(int type){
     return ptr;
 }
 
-void stuck_map(Block* b){
+void stuck_map(Block* b){	// 블럭이 바닥에 닿은 이후 블럭을 맵에 고정시키고 다음 블럭으로 넘어가는 함수
     Map* map = get_map();
     int (*map_arr)[COL] = map->map;
     
@@ -35,11 +35,11 @@ void stuck_map(Block* b){
     map->next_block_type = rand() % N_BLOCK;
 }
 
-void move_down(Block* b){
+void move_down(Block* b){	// 블럭을 아래로 한 칸 옮기는 함수
     b->y--;
 }
 
-boolean can_move_down(){
+boolean can_move_down(){	// 블럭을 아래로 한 칸 움직일 수 있는지 확인하는 함수
     Map* map = get_map();
     Block* block = map->current_block;
     int* floor = map->floor;
@@ -56,7 +56,7 @@ boolean can_move_down(){
     return TRUE;
 }
 
-void rotate_left(Block* b){
+void rotate_left(Block* b){	// 블럭을 왼쪽으로 90도 회전시키는 함수
 	int rot[2][2] = {{0, 1}, {-1, 0}};
 	int temp_arr[4][2] = {0, };
 
@@ -76,7 +76,7 @@ void rotate_left(Block* b){
 	check_validation(b);
 }
 
-void rotate_right(Block* b){
+void rotate_right(Block* b){	// 블럭을 오른쪽으로 90도 회전시키는 함수
 	int rot[2][2] = {{0, -1}, {1, 0}};
 	int temp_arr[4][2] = {0, };
 
@@ -94,7 +94,7 @@ void rotate_right(Block* b){
 	check_validation(b);
 }
 
-void move_left(Block* b){
+void move_left(Block* b){	// 블럭을 왼쪽으로 옮기는 함수
 	Map* map = get_map();
 	int base_x = b->x, base_y = b->y;
 	int min_x = base_x;
@@ -114,7 +114,7 @@ void move_left(Block* b){
 	}
 }
 
-void move_right(Block* b){
+void move_right(Block* b){	// 블럭을 오른쪽으로 옮기는 함수
 	Map* map = get_map();
 	int base_x = b->x, base_y = b->y;
 	int max_x = base_x;
@@ -134,7 +134,7 @@ void move_right(Block* b){
 	}
 }
 
-void check_validation(Block* b){
+void check_validation(Block* b){	//블럭의 위치 유효성을 확인하고 조정하는 함수
 	int base_x = b->x, base_y = b->y;
 
 	// 1) base_x < 0 or base_x >= COL
@@ -156,7 +156,7 @@ void check_validation(Block* b){
 		b->x -= (max_x - (COL - 1));	
 }
 
-void block_descent(Block* b, int* floor){
+void block_descent(Block* b, int* floor){	// 블럭을 최대한 아래로 옮기는 함수
 	int move_y = ROW;
 	int base_x = b->x, base_y = b->y;
 
