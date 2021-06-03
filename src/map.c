@@ -19,17 +19,20 @@ void map_print(){
     int *floor = map->floor;
 
     for(int i = ROW - 1; i >= 0; i--){
+        printf("| ");
         for(int j = 0; j < COL; j++){
-            printf("%d ", map_arr[i][j]);
+            if(map_arr[i][j] == 1)
+            printf("* ");
+            else printf("  ");
         }
-        printf("\n");
+        printf("|\n");
     }
     printf("floor: ");
     for(int i = 0; i < COL; i++){
         printf("%d ", floor[i]);
     }
     printf("\n");
-    printf("score: %d\tcombo: %d\n", map->score, map->combo);
+    printf("score: %d\tcombo: %d\tnext_block: %d\n", map->score, map->combo, map->next_block_type);
 }
 
 void bind_block(){
