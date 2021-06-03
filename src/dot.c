@@ -21,10 +21,10 @@ void dot_clear(){
 
 void dot_write(int (*dot_mat)[MAX_DOT]){
     for(int i = 0; i < MAX_DOT; i++){
-        int temp = 0;
+        short temp = 0;
         for(int j = 6; j >= 0; j--){
             temp <<= 1;
-            temp += dot_mat[j][i];
+            temp += (short)dot_mat[j][i];
             *dot[i] = temp;
         }
     }
