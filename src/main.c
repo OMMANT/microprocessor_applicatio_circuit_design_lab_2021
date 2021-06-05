@@ -4,6 +4,8 @@
 #include "block.h"
 #include "map.h"
 #include "led.h"
+#include "fnd.h"
+#include "clcd.h"
 
 static off_t IEB_DOT[MAX_DOT] = {
 	IEB_DOT1,
@@ -12,11 +14,21 @@ static off_t IEB_DOT[MAX_DOT] = {
 	IEB_DOT4,
 	IEB_DOT5
 };
+static off_t IEB_FND[MAX_FND] = {
+	IEB_FND0,
+	IEB_FND1,
+	IEB_FND2,
+	IEB_FND3,
+	IEB_FND4,
+	IEB_FND5,
+	IEB_FND6,
+	IEB_FND7
+};
 
 static int fd;
 static int map_counter = 0;
 static void * map_data[100];
-short *led, *dot[MAX_DOT];
+short *led, *dot[MAX_DOT], *fnd[MAX_FND], *clcd_data, *clcd_cmd;
 
 int main(int argc, char* argv[]){
     init();		// 변수 초기화
@@ -92,9 +104,22 @@ void init(){
     for(int i = 0; i < MAX_DOT; i++){
         dot[i] = mapper(IEB_DOT[i]);
     }
+	for(int i = 0; i < MAX_FND; i++){
+        fnd[i] = mapper(IEB_FND[i]);
+    }
+
+	clcd_cmd =  mapper(IEB_CLCD_CMD);
+	clcd_data =  mapper(IEB_CLCD_DATA);
+
+
     init_led(led);
     init_dot(dot);
+	init_fnd(fnd);
+	init_clcd(clcd_cmd, clcd_data);
     dot_clear();
+	fnd_decimal_number(0);
+	clcd_make_board();
+	clcd_update_grade(0);
     srand(time(NULL));
     start_time = clock();
     block_init();

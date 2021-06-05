@@ -1,6 +1,8 @@
 #include "map.h"
 #include "dot.h"
 #include "led.h"
+#include "fnd.h"
+#include "clcd.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -37,6 +39,8 @@ void map_print(){   // 맵의 상태를 콘솔로 출력하는 함수; dot matri
     printf("score: %d\tcombo: %d\tnext_block: %d\n", map->score, map->combo, map->next_block_type);
     dot_write(map_arr);
     led_write(map->combo);
+    fnd_decimal_number(map->score);
+    clcd_update(map->next_block_type, map->score);
 }
 
 void bind_block(){  // 현재 떨어지고 있는 블럭의 위치와 맵을 연결시켜주는 함수; 떨어지는 블럭은 맵에 고정되는것이 아님
