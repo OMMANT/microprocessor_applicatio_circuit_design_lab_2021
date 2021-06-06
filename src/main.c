@@ -76,7 +76,8 @@ int main(int argc, char* argv[]){
 				if(can_floor_rise()){
 					floor_rise();						// map->floor을 조절해주는 함수; 블럭이 바닥에 닿았을 때 바닥을 올려주는 역할을 함
 					stuck_map(map->current_block);		// 블럭이 바닥에 닿은 이후 블럭을 맵에 고정시키고 다음 블럭으로 넘어가는 함수
-					if(check_erasable()) erase();    	// 지울 수 있는 행이 있는지 확인 후 행을 지우기
+					check_erasable();
+					erase();    	// 지울 수 있는 행이 있는지 확인 후 행을 지우기
 				}
 				else{
 					printf("Gave Over!\n");

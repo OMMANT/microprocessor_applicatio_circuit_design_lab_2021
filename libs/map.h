@@ -25,7 +25,7 @@ void map_print();   // 맵의 상태를 콘솔로 출력하는 함수; dot matri
 void bind_block();  // 현재 떨어지고 있는 블럭의 위치와 맵을 연결시켜주는 함수; 떨어지는 블럭은 맵에 고정되는것이 아님
 void unbind_block();    // bind_block으로 블럭의 위치와 맵이 연결된 것을 해제하는 함수; 
 void floor_rise();      // map->floor을 조절해주는 함수; 블럭이 바닥에 닿았을 때 바닥을 올려주는 역할을 함
-boolean check_erasable();  // 지울 수 있는 행이 있는지 확인하는 함수
+void check_erasable();  // 지울 수 있는 행이 있는지 확인하는 함수
 void erase();           // 지울 수 있는 행을 지우는 함수
 Map* get_map();         // 전역변수인 map을 직접 참조하지 않도록 map을 반환
 boolean can_floor_rise();   // map->floor의 값을 조절할 수 있는지 확인하는 함수; 게임 종료 조건

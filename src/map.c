@@ -114,7 +114,7 @@ void floor_rise(){  // map->floor을 조절해주는 함수; 블럭이 바닥에
     }
 }
 
-boolean check_erasable(){  // 지울 수 있는 행이 있는지 확인하는 함수
+void check_erasable(){  // 지울 수 있는 행이 있는지 확인하는 함수
     int (*map_arr)[COL] = map->map;
     int* floor = map->floor;
     int* erasable = map->erasable;
@@ -132,9 +132,6 @@ boolean check_erasable(){  // 지울 수 있는 행이 있는지 확인하는 �
             erasable[map->erasable_count++] = i;
         }
     }
-    if(map->erasable_count >= 1)
-        return TRUE;
-    else return FALSE;
 }
 
 void erase(){   // 지울 수 있는 행을 지우는 함수
