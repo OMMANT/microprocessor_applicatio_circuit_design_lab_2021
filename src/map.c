@@ -193,14 +193,14 @@ void erase(){   // 지울 수 있는 행을 지우는 함수
 		else if(map->erasable_count > 3)
 			map->combo += 2 * map->erasable_count;
 	}
-        map->erased_before = TRUE;
-        map->combo = min(map->combo, 8);            
+        map->erased_before = TRUE;         
     }
     else{
         map->erased_before = FALSE;
         map->combo--;
-	map->combo = max(map->combo, 0);
     }
+    map->combo = min(map->combo, 8);
+    map->combo = max(map->combo, 0);   
     map->erasable_count = 0;
 }
 

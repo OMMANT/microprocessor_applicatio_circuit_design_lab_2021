@@ -95,11 +95,11 @@ char game_grade[CLCD_MAX_GRADE][CLCD_GRADE_LENGTH + 1] = {
 };
 
 char block_style[CLCD_BLOCK_TYPES][CLCD_TYPE_LENGTH + 1] ={
-	" SQUARE ",
-	"  CROSS ",
-	"    J   ",
-	"    L   ",
-	"STRAIGHT"
+	" SQUARE  ",
+	"  CROSS  ",
+	"    J    ",
+	"    L    ",
+	"STRAIGHT "
 };
 
 

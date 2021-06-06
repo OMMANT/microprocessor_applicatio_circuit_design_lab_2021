@@ -119,7 +119,7 @@ void init(){
     dot_clear();
 	fnd_decimal_number(0);
 	clcd_make_board();
-	clcd_update_grade(0);
+	clcd_update(0, 0);
     srand(time(NULL));
     start_time = clock();
     block_init();
